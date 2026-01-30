@@ -34,7 +34,7 @@ void main() {
 #if !DEPTH_ONLY_PASS && !DEPTH_ONLY_OPAQUE_PASS
     v_color0 = a_color0;
     v_worldPos = worldPos;
-    v_clipPos = mul(u_modelViewProj, vec4(worldPos, 1.0));
+    v_clipPos = mul(u_viewProj, vec4(worldPos, 1.0));
 
     v_normal = mul(model, vec4(a_normal.xyz, 0.0)).xyz;
     v_tangent = mul(model, vec4(a_tangent.xyz, 0.0)).xyz;

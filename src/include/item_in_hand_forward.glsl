@@ -35,7 +35,7 @@ void main() {
 
     v_color0 = a_color0;
     v_worldPos = worldPos;
-    v_clipPos = mul(u_modelViewProj, vec4(worldPos, 1.0));
+    v_clipPos = mul(u_viewProj, vec4(worldPos, 1.0));
     v_normal = mul(u_model[0], vec4(a_normal.xyz, 0.0)).xyz;
     v_prevWorldPos = mul(PrevWorld, vec4(a_position, 1.0)).xyz;
 

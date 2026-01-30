@@ -21,10 +21,10 @@ void main() {
     v_tangent = mul(u_model[0], vec4(a_tangent.xyz, 0.0)).xyz;
     v_bitangent = mul(u_model[0], vec4(cross(a_normal.xyz, a_tangent.xyz) * a_tangent.w, 0.0)).xyz;
 #else
-    gl_Position = mul(u_modelViewProj, vec4(worldPos, 1.0));
+    gl_Position = mul(u_viewProj, vec4(worldPos, 1.0));
 #endif
 
-    v_clipPos = mul(u_modelViewProj, vec4(worldPos, 1.0));
+    v_clipPos = mul(u_viewProj, vec4(worldPos, 1.0));
     v_worldPos = worldPos;
     v_color0 = a_color0;
     v_texcoord0 = a_texcoord0;

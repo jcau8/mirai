@@ -25,7 +25,7 @@ void main() {
     v_bitangent = mul(u_model[0], vec4(cross(a_normal.xyz, a_tangent.xyz) * a_tangent.w, 0.0)).xyz;
     v_worldPos = worldPos;
     v_color0 = a_color0;
-    v_clipPos = mul(u_modelViewProj, vec4(worldPos, 1.0));
+    v_clipPos = mul(u_viewProj, vec4(worldPos, 1.0));
 
     v_absorbColor = GetLightTransmittance(SunDir.xyz) * SUN_MAX_ILLUMINANCE;
     v_absorbColor += GetLightTransmittance(MoonDir.xyz) * MOON_MAX_ILLUMINANCE;
