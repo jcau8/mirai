@@ -89,15 +89,15 @@ void main() {
             outColor = vec3_splat(0.0);
             gl_FragColor.a = smoothstep(1.0, 0.0, dot(normal, refract(worldDir, -normal, 1.333)));
         }
+
+        if (VolumeScatteringEnabledAndPointLightVolumetricsEnabled.x != 0.0) {
+            vec3 uvw = ndcToVolume(projPos);
+            vec4 volumetricFog = sampleVolume(s_ScatteringBuffer, uvw);
+            outColor = outColor * volumetricFog.a + volumetricFog.rgb;
+        }
     } else {
         float fogBlend = calculateFogIntensityFaded(worldDist, FogAndDistanceControl.z, FogAndDistanceControl.x, FogAndDistanceControl.y, RenderChunkFogAlpha.x);
         outColor = mix(outColor, pow(FogColor.rgb, vec3_splat(2.2)), fogBlend);
-    }
-
-    if (VolumeScatteringEnabledAndPointLightVolumetricsEnabled.x != 0.0) {
-        vec3 uvw = ndcToVolume(projPos);
-        vec4 volumetricFog = sampleVolume(s_ScatteringBuffer, uvw);
-        outColor = outColor * volumetricFog.a + volumetricFog.rgb;
     }
 
     outColor = preExposeLighting(outColor, texture2D(s_PreviousFrameAverageLuminance, vec2_splat(0.5)).r);

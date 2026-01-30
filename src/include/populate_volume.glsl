@@ -14,6 +14,7 @@ uniform highp vec4 JitterOffset;
 uniform highp vec4 TemporalSettings;
 uniform highp vec4 SunDir;
 uniform highp vec4 MoonDir;
+uniform highp vec4 DimensionID;
 
 SAMPLER2DARRAY_AUTOREG(s_ShadowCascades);
 SAMPLER2DARRAY_AUTOREG(s_PreviousLightingBuffer);
@@ -115,7 +116,7 @@ void main() {
 
     vec4 scatterExt = vec4(scattering + extraMie * 5e-4, mix(1.0, 0.0, luminance(transmittance.rgb))) * saturate(1.0 - fogBlend) * altitudeMod;
 
-    if (CameraUnderwaterAndWaterSurfaceBiasAndFalloff.r != 0.0) scatterExt = vec4_splat(0.0);
+    if (CameraUnderwaterAndWaterSurfaceBiasAndFalloff.r != 0.0 || DimensionID.r != 0.0) scatterExt = vec4_splat(0.0);
 
     if (TemporalSettings.x != 0.0) {
         vec3 uvwNoJitt = (vec3(xyz) + 0.5) / VolumeDimensions.xyz;

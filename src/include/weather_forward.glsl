@@ -10,8 +10,7 @@ uniform highp vec4 PositionForwardOffset;
 uniform highp vec4 PrevPositionForwardOffset;
 
 vec3 calcWorldPos(vec3 position) {
-    vec3 p = position + PositionBaseOffset.xyz;
-    p = p - 30.0 * trunc(p / 30.0);
+    vec3 p = mod(position + PositionBaseOffset.xyz, 30.0);
     p -= 15.0;
     p += PositionForwardOffset.xyz;
     return p;
@@ -56,11 +55,11 @@ bool isOccluded(vec2 occlusionUV, float occlusionHeight, float occlusionHeightTh
 #if NO_OCCLUSION__ON
     return false;
 #else
-    if (!(occlusionUV.x >= 0.0 && occlusionUV.x <= 1.0 && occlusionUV.y >= 0.0 && occlusionUV.y <= 1.0)) return false;
+    bool occlusionUv = occlusionUV.x >= 0.0 && occlusionUV.x <= 1.0 && occlusionUV.y >= 0.0 && occlusionUV.y <= 1.0;
 #if FLIP_OCCLUSION__ON
-    return occlusionHeight < occlusionHeightThreshold;
+    return (occlusionUv && occlusionHeight > occlusionHeightThreshold);
 #else
-    return occlusionHeight > occlusionHeightThreshold;
+    return (occlusionUv && occlusionHeight < occlusionHeightThreshold);
 #endif
 #endif
 }
