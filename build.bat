@@ -23,7 +23,7 @@ set NOCLOUDS_PROFILE=%PLATFORM%_noclouds
 
 set SHADERC_PATH=shaderc.exe
 set ZIP_FILE=shaderc.zip
-set DOWNLOAD_URL=https://github.com/veka0/bgfx-mcbe/releases/download/binaries/shaderc-win-x64.zip
+set DOWNLOAD_URL=https://github.com/bambosan/bgfx-mcbe/releases/download/binaries/shaderc-win-x64.zip
 
 REM checking lazurite
 where lazurite >nul 2>nul
