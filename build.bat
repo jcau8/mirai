@@ -1,79 +1,128 @@
 @echo off
 setlocal enabledelayedexpansion
+:: Name: build.bat
+:: Version: v0.1.0
+:: Author: bambosan
+:: Date: 2026, 03, 06
 
-REM checking param
-if "%~1"=="" (
-    echo Usage: build.bat ^<platform^>
-    echo Allowed: windows ^| android ^| ios
-    exit /b 1
-)
+title Build Mirai Shader
 
-set PLATFORM=%~1
+REM Colours and escape sequences (from matject, thanks to fzul)
+set "GRY=[90m"
+set "RED=[91m"
+set "GRN=[92m"
+set "YLW=[93m"
+set "BLU=[94m"
+set "CYN=[96m"
+set "WHT=[97m"
+set "RST=[0m" && REM Clears colours and formatting
+set "ERR=[41;97m" && REM Red background with white text
 
-REM paramter/platform validatoin
-if /I not "%PLATFORM%"=="windows" if /I not "%PLATFORM%"=="android" if /I not "%PLATFORM%"=="ios" (
-    echo Invalid platform: %PLATFORM%
-    echo Allowed platforms: windows, android, ios
-    exit /b 1
-)
+set "BASE_PROFILE=lazurite base"
+set "NORMAL_PROFILE=windows"
+set "NOCLOUDS_PROFILE=windows_noclouds"
 
-set BASE_PROFILE=%PLATFORM%_base
-set NORMAL_PROFILE=%PLATFORM%
-set NOCLOUDS_PROFILE=%PLATFORM%_noclouds
+set "SHADERC_PATH=shaderc.exe"
+set "ZIP_FILE=shaderc.zip"
+set "DOWNLOAD_URL=https://github.com/bambosan/bgfx-mcbe/releases/download/binaries/shaderc-win-x64.zip"
 
-set SHADERC_PATH=shaderc.exe
-set ZIP_FILE=shaderc.zip
-set DOWNLOAD_URL=https://github.com/bambosan/bgfx-mcbe/releases/download/binaries/shaderc-win-x64.zip
-
-REM checking lazurite
-where lazurite >nul 2>nul
+REM Checking for lazurite
+python -c "import lazurite" 2>nul
 if errorlevel 1 (
-    echo ERROR: lazurite not found.
-    echo Please install first:
-    echo pip install lazurite
-    exit /b 1
+    echo !ERR!Lazurite not found.!RST!
+    echo !WHT!Make sure you have installed lazurite.!RST!
+    echo !WHT!To install lazurite open a command prompt and run: !GRY!pip install lazurite!RST!
+    echo !GRY!Press any key to exit...!RST!
+    pause >nul
+    exit 1
 )
+echo !GRN!Lazurite found!!RST!
 
-
-REM checking shaderc
+pause
+REM Checking shaderc
 if exist "%SHADERC_PATH%" (
-    echo shaderc found.
+    echo !GRN!Shaderc found!RST!
+    pause
+    goto :build_materials
 ) else (
-    echo shaderc not found. Downloading...
-
-    powershell -Command ^
-        "Invoke-WebRequest -Uri '%DOWNLOAD_URL%' -OutFile '%ZIP_FILE%'"
-
-    echo Extracting...
-    powershell -Command ^
-        "Expand-Archive -Force '%ZIP_FILE%' '.'"
-
-    for /r %%f in (shadercRelease.exe) do (
-        move "%%f" "%SHADERC_PATH%" >nul
-        goto :found_shaderc
-    )
-
-    echo shaderc binary not found after extraction!
-    exit /b 1
-
-:found_shaderc
-    del "%ZIP_FILE%"
-    echo shaderc downloaded.
+    echo !ERR!Shaderc not found.!RST!
+    echo !WHT!The build cannot start without shaderc installed.!RST!
 )
 
+echo !YLW!Would you like to download shaderc automatically? (Y/N)!RST!
+choice /c yn /n >nul
+set "CHOICE=%errorlevel%"
 
-REM do build
+if "%CHOICE%"=="1" (
+    goto :download_shaderc
+) else (
+    echo !WHT!Please install shaderc to this folder.!RST!
+    echo !GRY!Press any key to exit...!RST!
+    pause >nul
+    exit 1
+)
 
-echo Running build: %BASE_PROFILE%
-lazurite build ./src -p %BASE_PROFILE% -o ./pack/renderer/materials --skip-validation
-if errorlevel 1 exit /b 1
+:download_shaderc
+cls
+powershell -Command "Invoke-WebRequest -Uri '%DOWNLOAD_URL%' -OutFile '%ZIP_FILE%'"
+powershell -Command "Expand-Archive -Force '%ZIP_FILE%' '.'"
 
-echo Running build: %NORMAL_PROFILE%
-lazurite build ./src -p %NORMAL_PROFILE% -o ./pack/subpacks/vc/renderer/materials --skip-validation
-if errorlevel 1 exit /b 1
+pause
+set "SHADERC_FOUND=0"
+for /r %%f in (shadercRelease.exe) do (
+    move "%%f" "%SHADERC_PATH%" >nul
+    set "SHADERC_FOUND=1"
+)
 
-echo Running build: %NOCLOUDS_PROFILE%
-lazurite build ./src -p %NOCLOUDS_PROFILE% -o ./pack/subpacks/novc/renderer/materials --skip-validation
-if errorlevel 1 exit /b 1
+REM Make sure shaderc installed successfully
+if "%SHADERC_FOUND%"=="0" (
+    echo !ERR!Shaderc binary not found after extraction!!RST!
+    echo !GRY!Press any key to exit...!RST!
+    pause >nul
+    exit 1
+)
+del "%ZIP_FILE%"
 
-echo Build completed successfully!
+echo !GRN!Shaderc successfully downloaded.!RST!
+
+:build_materials
+cls
+
+REM Build all profiles for windows
+echo !WHT!Running build: %BASE_PROFILE%!RST!
+call python -m lazurite build ./src -o ./pack/renderer/materials --skip-validation
+if errorlevel 1 (
+    echo !ERR!Failed to build profile: %BASE_PROFILE%!RST!
+    pause
+    exit /b 1
+)
+echo !GRN!Build: %BASE_PROFILE% completed successfully!!RST!
+pause
+
+cls
+echo !WHT!Running build: %NORMAL_PROFILE%!RST!
+call python -m lazurite build ./src -p %NORMAL_PROFILE% -o ./pack/subpacks/vc/renderer/materials --skip-validation
+if errorlevel 1 (
+    echo !ERR!Failed to build profile: %NORMAL_PROFILE%!RST!
+    pause
+    exit /b 1
+)
+echo !GRN!Build: %NORMAL_PROFILE% completed successfully!!RST!
+pause
+
+cls
+echo !WHT!Running build: %NOCLOUDS_PROFILE%!RST!
+call python -m lazurite build ./src -p %NOCLOUDS_PROFILE% -o ./pack/subpacks/novc/renderer/materials --skip-validation
+if errorlevel 1 (
+    echo !ERR!Failed to build profile: %NOCLOUDS_PROFILE%!RST!
+    pause
+    exit /b 1
+)
+echo !GRN!Build: %NOCLOUDS_PROFILE% completed successfully!!RST!
+pause
+
+cls
+echo !GRN!All builds completed successfully!!RST!
+echo !GRY!Press any key to exit...!RST!
+pause >nul
+exit 0
