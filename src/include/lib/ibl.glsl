@@ -14,9 +14,8 @@ SAMPLERCUBEARRAY_AUTOREG(s_SpecularIBLRecords);
 
 float getIBLMipLevel(float a) {
     float x = 1.0 - a;
-    x = pow(x, 4.0);
-    if (int(ConvolutionType.x) == 1) x = pow(x, 2.0);
-    return (1.0 - x) * (IBLParameters.y - 1.0);
+    if (int(ConvolutionType.x) != 1) x = x * x * x * x;
+    return (1.0 - x * x) * (IBLParameters.y - 1.0);
 }
 
 vec3 getProbeLighting(float a, vec3 rv) {

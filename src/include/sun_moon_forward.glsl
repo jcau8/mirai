@@ -53,11 +53,10 @@ void main() {
     outColor *= cloudTransmittance * cloudTransmittance * cloudTransmittance; //this is shiny sun, so need extra transmission to hide it
 #endif
 
-    //mask moon position, sample texture and mask the solid part
+    //mask moon position and sample the texture
     if (dot(worldDir, MoonDir.xyz) > 0.0) {
         vec3 tex = texture2D(s_SunMoonTexture, v_texcoord0).rgb;
-        float solidMask = step(0.25, colorAvg(tex)); //take only solid part, ignore glow effect from textuer
-        outColor = tex * solidMask * transmittance.rgb;
+        outColor = tex * luminance(tex) * transmittance.rgb;
 #ifdef VOLUMETRIC_CLOUDS_ENABLED
         outColor *= cloudTransmittance;
 #endif

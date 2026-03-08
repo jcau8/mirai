@@ -8,8 +8,8 @@
 #define LUMA_REC709 vec3(0.2126, 0.7152, 0.0722)
 #define MIDDLE_GRAY 0.18
 
-#define BLOCK_LIGHT_COLOR vec3(1.0, 0.7, 0.5)
-#define BLOCK_LIGHT_INTENSITY 15.0
+#define BLOCK_LIGHT_COLOR vec3(1.0, 0.5, 0.1)
+#define BLOCK_LIGHT_INTENSITY 5.0
 #define SKY_AMBIENT_INTENSITY 2.0
 #define EMISSIVE_MATERIAL_INTENSITY 25.0
 #define MIN_AMBIENT_LIGHT 0.001
@@ -59,8 +59,7 @@ float sampleDepth(highp sampler2D depthtex, vec2 uv) {
 //https://github.com/bWFuanVzYWth/OriginShader/blob/main/OriginShader/shaders/glsl/shaderfunction.lin
 float ux2l(float l) { return 1.0 / (l * l); }
 float uv1x2lig(float uv1x) {
-    uv1x *= 0.75;
-    float l = clamp((14.0 / 16.0) - uv1x, 0.0, 1.0) * 16.0 + 0.5;
+    float l = clamp(1.0 - uv1x, 0.0, 1.0) * 16.0 + 0.5;
     return max(0.0, ux2l(l) - ux2l(15.0) * (1.0 - uv1x));
 }
 

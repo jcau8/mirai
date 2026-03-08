@@ -171,11 +171,11 @@ vec3 GetAtmosphere(
 
         float costh = dot(rayDir, lightDir);
         float phaseR = PhaseR(costh);
-        float phaseM = PhaseM(costh, 0.8);
+        float phaseM = PhaseM(costh, 0.85);
 
         // Combined scattering
-        vec3 rayleigh = (phaseR * occlusion + phaseR * M_FAKE_MS) * lightColor + phaseR;
-        vec3 mie = ((phaseM * occlusion + phaseR * M_FAKE_MS) * lightColor + phaseR) * M_MIE;
+        vec3 rayleigh = (phaseR * occlusion + phaseR * M_FAKE_MS) * lightColor;
+        vec3 mie = ((phaseM * occlusion + phaseR * M_FAKE_MS) * lightColor) * M_MIE;
         vec3 scattering = mie * M + rayleigh * R;
 
         // View extinction, matched to reference
