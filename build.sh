@@ -6,14 +6,10 @@ SHADERC_PATH=./shaderc
 DOWNLOAD_URL="https://github.com/bambosan/bgfx-mcbe/releases/download/binaries/shaderc-linux-x64.zip"
 ZIP_FILE="shaderc.zip"
 
-SUBPACKS_PATH=./pack/subpacks
-VC_SUBPACK_PATH=$SUBPACKS_PATH/vc
-NOVC_SUBPACK_PATH=$SUBPACKS_PATH/novc
-VC_SUBPACK_RENDERER_PATH=$VC_SUBPACK_PATH/renderer
-VC_SUBPACK_MATERIALS_PATH=$VC_SUBPACK_RENDERER_PATH/materials
-NOVC_SUBPACK_RENDERER_PATH=$NOVC_SUBPACK_PATH/renderer
-NOVC_SUBPACK_MATERIALS_PATH=$NOVC_SUBPACK_RENDERER_PATH/materials
 BASE_MATERIALS_PATH=./pack/renderer/materials
+SUBPACKS_PATH=./pack/subpacks
+VC_SUBPACK_MATERIALS_PATH=$SUBPACKS_PATH/vc/renderer/materials
+NOVC_SUBPACK_MATERIALS_PATH=$SUBPACKS_PATH/novc/renderer/materials
 
 # check parameter
 if [ -z "$1" ]; then
@@ -70,30 +66,22 @@ fi
 
 echo ""
 
-mkdir -p "$SUBPACKS_PATH"
-mkdir -p "$NOVC_SUBPACK_PATH"
-mkdir -p "$VC_SUBPACK_PATH"
-mkdir -p "$NOVC_SUBPACK_RENDERER_PATH"
-mkdir -p "$VC_SUBPACK_RENDERER_PATH"
-mkdir -p "$NOVC_SUBPACK_MATERIALS_PATH"
-mkdir -p "$VC_SUBPACK_MATERIALS_PATH"
 mkdir -p "$BASE_MATERIALS_PATH"
+mkdir -p "$VC_SUBPACK_MATERIALS_PATH"
+mkdir -p "$NOVC_SUBPACK_MATERIALS_PATH"
 
 # do build
 echo "Running build: $BASE_PROFILE"
-lazurite build ./src -p "$BASE_PROFILE" \
-    -o ./pack/renderer/materials --skip-validation
+lazurite build ./src -p $BASE_PROFILE -o "$BASE_MATERIALS_PATH" --skip-validation
 
 echo ""
 
 echo "Running build: $NORMAL_PROFILE"
-lazurite build ./src -p "$NORMAL_PROFILE" \
-    -o ./pack/subpacks/vc/renderer/materials --skip-validation
+lazurite build ./src -p $NORMAL_PROFILE -o "$VC_SUBPACK_MATERIALS_PATH" --skip-validation
 
 echo ""
 
 echo "Running build: $NOCLOUDS_PROFILE"
-lazurite build ./src -p "$NOCLOUDS_PROFILE" \
-    -o ./pack/subpacks/novc/renderer/materials --skip-validation
+lazurite build ./src -p $NOCLOUDS_PROFILE -o "$NOVC_SUBPACK_MATERIALS_PATH" --skip-validation
 
 echo "Build completed successfully!"
