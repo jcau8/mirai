@@ -1,7 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 :: Name: build.bat
-:: Version: v1.2.2
+:: Version: v1.2.4
 :: Author: bambosan
 :: Date: 2026, 03, 06
 
@@ -160,7 +160,29 @@ pause
 
 cls
 echo !GRN!All builds completed successfully!!RST!
+echo !WHT!!RST!
+
+echo !YLW!Would you like to compress the finished build into a MCPACK? (Y/N)!RST!
+choice /c yn /n >nul
+set "CHOICE=%errorlevel%"
+
+if "%CHOICE%"=="1" (
+    goto :zip_into_mcpack
+) else (
+    echo !GRY!Press any key to exit...!RST!
+    pause >nul
+    popd
+    exit 1
+)
+
+:zip_into_mcpack
+cls
+
+call tar.exe -cvf MiraiWindows.zip "%PACK_PATH%"
+rename "MiraiWindows.zip" "MiraiWindows.mcpack"
+cls
+echo !GRN!Compression successful!!RST!
+
 echo !GRY!Press any key to exit...!RST!
 pause >nul
-popd
 exit 0
